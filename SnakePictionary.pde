@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
-final int PLAY = 1100;
+final int PLAY = 990;
 final int BOXSIZE = 20;
 final int GAP = 2;
 final int SNAKECOLOR = 0;
-final int FOODCOLOR = 50;
-final int GRID = 50;
+final int FOODCOLOR = 45;
+final int GRID = 45;
 
 int direction;
 int prevdir;
@@ -36,16 +36,17 @@ class snake {
   ArrayList<box> serpant;
   int x, y;
   int velx, vely;
+  // box head;
   food f;
   snake() {
     serpant = new ArrayList<box>();
     x = GRID/2;
     y = GRID/2;
-    serpant.add(new box(x, y, SNAKECOLOR));
-    serpant.add(new box(x+1, y, SNAKECOLOR));
-    serpant.add(new box(x+2, y, SNAKECOLOR));
-    serpant.add(new box(x+3, y, SNAKECOLOR));
-    f = new food();
+    for (int i = 0; i < 5; i++) {
+      serpant.add(new box(x + i, y, SNAKECOLOR));
+    }
+    //head = serpant.get(0);
+    f = new food(); //<>//
   }
   
   void displaySnake() {
@@ -60,20 +61,35 @@ class snake {
     
     if ((x == f.getx()) && (y == f.gety())) {
       // get bigger, make new food
-      serpant.add(new box(serpant.get(serpant.size()-1).getx(), serpant.get(serpant.size()-1).gety(), SNAKECOLOR));
+      serpant.add(new box(serpant.get(0).getx(), serpant.get(0).gety(), SNAKECOLOR));
       f = new food();
     }
-    
-    if (x > 50 || x < 0 || y > 50 || y < 0) noLoop();
+    if (x > GRID || x < 0 || y > GRID || y < 0) noLoop();
+    if (headInBody()) noLoop();
+  }
+  
+  boolean headInBody() {
+    int a, b;
+    a = serpant.get(serpant.size()-1).getx();
+    b = serpant.get(serpant.size()-1).gety();
+    for (int i = serpant.size()-2; i > 0; i--) { //<>//
+      println(serpant.get(i).getx() + " " + serpant.get(i).gety() + ":" + a + " " + b);
+      if ((serpant.get(i).getx() == a ) && (serpant.get(i).gety() == b)) {
+        return true;
+      }
+    }
+    return false;
   }
   
   void direct(int dir) {
+    if (prevdir != dir) {
     switch(dir) {
       case 0:
         // right
         if (prevdir != 2) {
           vely = 0;
           velx = 1;
+          prevdir = dir;
         }
         break;
       case 1:
@@ -81,6 +97,7 @@ class snake {
         if (prevdir != 3) {
           vely = -1;
           velx = 0;
+          prevdir = dir;
         }
         break;
       case 2:
@@ -88,6 +105,7 @@ class snake {
         if (prevdir != 0) {
           vely = 0;
           velx = -1;
+          prevdir = dir;
         }
         break;
       case 3:
@@ -95,10 +113,11 @@ class snake {
         if (prevdir != 1) {
           vely = 1;
           velx = 0;
+          prevdir = dir;
         }
         break;
     }
-    prevdir = dir;
+    }
   }
 }
 
@@ -150,11 +169,11 @@ void keyPressed() {
 }
 
 void setup() {
-  size(1100, 1100);
-  frameRate(4);
+  size(990, 990);
+  frameRate(5);
   background(34,139,34);
   direction = 0;
-  prevdir = 0;
+  prevdir = 5;
   s = new snake();
   s.direct(direction);
 }
